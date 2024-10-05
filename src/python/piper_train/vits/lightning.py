@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
@@ -68,7 +69,7 @@ class VitsModel(pl.LightningModule):
         c_mel: int = 45,
         c_kl: float = 1.0,
         grad_clip: Optional[float] = None,
-        num_workers: int = 1,
+        num_workers: int = os.cpu_count(),  # Dynamically set to the number of CPU cores
         seed: int = 1234,
         num_test_examples: int = 5,
         validation_split: float = 0.1,

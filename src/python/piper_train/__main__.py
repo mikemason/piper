@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 
 import torch
+torch.set_float32_matmul_precision('medium')  # Set precision to 'medium'
+
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 
@@ -62,18 +64,15 @@ def main():
         num_speakers = int(config["num_speakers"])
         sample_rate = int(config["audio"]["sample_rate"])
 
-    trainer = Trainer.from_argparse_args(args)
+    callbacks = []
     if args.checkpoint_epochs is not None:
-        trainer.callbacks = [ModelCheckpoint(every_n_epochs=args.checkpoint_epochs)]
+        callbacks.append(ModelCheckpoint(every_n_epochs=args.checkpoint_epochs, monitor="val_loss", save_top_k=1, mode="min"))
         _LOGGER.debug(
             "Checkpoints will be saved every %s epoch(s)", args.checkpoint_epochs
         )
-<<<<<<< HEAD
-=======
     if args.patience is not None:
         callbacks.append(EarlyStopping(monitor="val_loss", min_delta=0.00, patience=args.patience, verbose=True, mode="min"))
     trainer = Trainer.from_argparse_args(args, callbacks=callbacks)
->>>>>>> 555e8aa (Add early stopping to prevent training for too long and overfitting)
 
     dict_args = vars(args)
     if args.quality == "x-low":
